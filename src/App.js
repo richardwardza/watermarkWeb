@@ -37,24 +37,36 @@ const TextInput = styled.input`
     width: 250px;
 `;
 
+const UploadFileList = styled.div`
+    margin-top:20px;
+    margin-bottom: 10px;
+`;
+
+const WatermarkFile = styled.button`
+    background-color: #f4f4f4;
+    width: 200px;
+    height: 40px;
+    margin: 40px auto 0;
+    cursor: pointer;
+    &:hover {
+        background-color: #d4d4d4;
+    }
+`
 
 @observer
 class App extends Component {
 
     @observable line1 = "";
     @observable line2 = "";
+    @observable file = {};
 
     onDrop(acceptedFiles, rejectedFiles) {
-        this.handleUploadImage(acceptedFiles);
+        this.file = acceptedFiles[0];
     }
 
 
-    async handleUploadImage(files) {
-
+    async handleUploadImage() {
         const data = new FormData();
-        data.append('file', files[0]);
-        data.append('line1', this.line1);
-        data.append('line2', this.line2);
 
         const request = {
             method: "POST",
@@ -93,11 +105,14 @@ class App extends Component {
                             placeholder="line2"
                             value={this.line2}
                             onChange={e => this.setText("line2", e.target.value)} />
+                        <UploadFileList>File to Watermark:</UploadFileList>
+                        <div>{this.file.name || "-----------"}</div>
                     </Text>
-                    <Dropzone accept={"application/pdf"} multiple={false} onDrop={(files) => this.onDrop(files)}>
-                        <div>Try dropping some files here, or click to select files to upload.</div>
+                    <Dropzone accept={"application/pdf"} style={{border: "1px solid #000", width: "150px", padding: "20px", boxSizing:"borderBox"}} multiple={false} onDrop={(files) => this.onDrop(files)}>
+                        <div>Drop files here or click to select files to upload</div>
                     </Dropzone>
                 </Form >
+                <WatermarkFile onClick={() => this.handleUploadImage()}>Watermark</WatermarkFile>
             </Page>
         );
     }
