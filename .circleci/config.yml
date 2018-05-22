@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Check Env
           command: |
-            ssh $SSH_USER@$SSH_HOST "env && nvm --version && npm -v && npm -v"
+            ssh $SSH_USER@$SSH_HOST "env && nvm --version && node -v && npm -v"
       - run:
           name: Build Service
           command: |
