@@ -59,7 +59,7 @@ class App extends Component {
     async handleUploadImage() {
 
 
-        if (this.isFormValid) {
+        if (this.formIsValid) {
 
             const data = new FormData();
 
