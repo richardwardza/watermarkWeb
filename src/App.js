@@ -62,6 +62,9 @@ class App extends Component {
         if (this.formIsValid) {
 
             const data = new FormData();
+            data.append("file", this.file);
+            data.append("line1", this.line1);
+            data.append("line2", this.line2);
 
             const request = {
                 method: "POST",
