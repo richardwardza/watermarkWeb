@@ -52,7 +52,7 @@ class App extends Component {
 
     @computed
     get formIsValid () {
-        return this.line1.length > 0 && this.file.name != undefined;
+        return this.line1.length > 0 && this.file.name !== undefined;
     }
 
 
@@ -80,6 +80,7 @@ class App extends Component {
             }
             else if (res.status === 400) {
                 const errorObject = await res.json();
+                console.log(errorObject);
             }
             else {
 
