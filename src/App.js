@@ -40,6 +40,7 @@ class App extends Component {
     @observable line2 = "";
     @observable file = {};
     @observable error = {};
+    @observable processingFile = false;
 
     onDrop(acceptedFiles, rejectedFiles) {
         this.file = acceptedFiles[0];
@@ -51,7 +52,7 @@ class App extends Component {
     }
 
     @computed
-    get formIsValid () {
+    get formIsValid() {
         return this.line1.length > 0 && this.file.name !== undefined;
     }
 
@@ -70,23 +71,27 @@ class App extends Component {
                 method: "POST",
                 body: data
             }
+            this.processingFile = true;
+            try {
+                const res = await fetch(API_SERVER + "/watermark", request);
+                this.processingFile = false;
+                if (res.status === 200) {
+                    const blobFile = await res.blob();
+                    var blobURL = window.URL.createObjectURL(blobFile);
 
-            const res = await fetch(API_SERVER + "/watermark", request);
-            if (res.status === 200) {
-                const blobFile = await res.blob();
-                var blobURL = window.URL.createObjectURL(blobFile);
-
-                const tempLink = document.createElement('a');
-                tempLink.href = blobURL;
-                tempLink.setAttribute('download', 'watermark.pdf');
-                tempLink.click();
+                    const tempLink = document.createElement('a');
+                    tempLink.href = blobURL;
+                    tempLink.setAttribute('download', 'watermark.pdf');
+                    tempLink.click();
+                }
+                else {
+                    const errorObject = await res.json();
+                    console.log(errorObject);
+                }
             }
-            else if (res.status === 400) {
-                const errorObject = await res.json();
-                console.log(errorObject);
-            }
-            else {
-
+            catch (err) {
+                console.log("Error - ", err);
+                this.processingFile = false;
             }
         }
     }
@@ -127,14 +132,15 @@ class App extends Component {
                     </Dropzone>
                 </Form >
                 <Button
-                    variant="raised" 
+                    variant="raised"
                     color="primary"
-                    style={{ "width": "200px", "height": "40px", "margin": "40px auto 0",}}
+                    style={{ "width": "200px", "height": "40px", "margin": "40px auto 0", }}
                     onClick={() => this.handleUploadImage()}
-                    disabled={!this.formIsValid}
+                    disabled={!this.formIsValid || this.processingFile}
                 >
                     Watermark
-                 </Button>
+                    </Button>
+
             </Page>
         );
     }
